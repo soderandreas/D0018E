@@ -1,0 +1,36 @@
+.header_container {
+    text-align: right;
+    /*margin: auto;
+    width: 80%;*/
+    margin-right: 25px;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
+
+.feed_container {
+    border: 3px solid #975517;
+    margin: auto;
+    width:  60%;
+    padding: 1%;   
+}
+
+.item {
+    /*border: 3px solid #972617;*/
+    background-color: rgba(196, 196, 196, 0.4);
+    margin: 0.5%;
+    padding: 1% 2%;
+}
+
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 7px;
+  }
