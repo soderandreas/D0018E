@@ -23,6 +23,7 @@
 
         $name = "";
         $pass = "";
+        $banned = false;
 
         while($data = $result->fetch(PDO::FETCH_ASSOC)){
             $name = $data['Username'];
@@ -30,16 +31,28 @@
             $id = $data['ID'];
         }
 
+        $sql_query2 = "SELECT Username FROM Users INNER JOIN BanUser ON ID = customerID";
+        $result2 = $conn->prepare($sql_query2);
+        $result2->execute();
+
+        while($data2 = $result2->fetch(PDO::FETCH_ASSOC)){
+            if($data2['Username'] == $name){
+                $banned = true;
+            }
+        }
+
         session_start();
 
-        if($_POST['username'] == $name && $_POST['password'] == $pass){ // Kollar så lösenord och användarnamn matchar, om de gör det sätts användarnamn och användarens ID för sessionen
+        if($_POST['username'] == $name && $_POST['password'] == $pass && $banned == false){ // Kollar så lösenord och användarnamn matchar, om de gör det sätts användarnamn och användarens ID för sessionen
             #$_SESSION["username"] = $name;
             $_SESSION['UserID'] = $id;
-            #setcookie("userID", $id, time() + (86400 * 30), "/");
+            header("Location: ../index.php");
+        } else {
+            header("Location: ../index.php?err=2");
         }
         #echo "test4";	
 
-        header("Location: ../index.php");
+        
         exit();
 
     } else {

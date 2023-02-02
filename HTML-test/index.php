@@ -13,12 +13,14 @@
         echo "Connection failed: " . $e->getMessage();
     }
 
+    $error = $_GET["err"];
+
     $username = "";
     $loggedIn = false;
 
     session_start();
 
-    if(isset($_SESSION["UserID"])){
+    if(isset($_SESSION["UserID"]) && $error == null){
         $loggedIn = true;
         $id = $_SESSION["UserID"];
         
@@ -34,11 +36,23 @@
 			$name = $data['Username'];
 		}
 		$username = $name;
+    } else if ($error == 2){
+        echo "You have been banned!";
     }
 ?>
 
 <html>
     <head>
+        <?php
+            if($loggedIn){
+                $style = "style.css";
+            } else {
+                $style = "styleLogin.css";
+            }
+        ?>
+        <link rel="stylesheet" href=<?php echo $style ?> />
+        <meta charset="UTF-8" />
+        <script type="text/Javascript" src="javaScript.js"></script>
         <title>
             <?php
                 if($loggedIn){
@@ -48,9 +62,6 @@
                 }
             ?>
         </title>
-        <meta charset="UTF-8" />
-        <link type="text/css" rel="Stylesheet" href="style.css" />
-        <script type="text/Javascript" src="javaScript.js"></script>
     </head>
 
     <body>

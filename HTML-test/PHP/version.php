@@ -32,16 +32,19 @@
 		$username = $name;
     }
 
-    $defaultHomePage = 
-    '<form action="PHP/login.php" method="POST">
-        <h1>username</h1>
-        <input type="text" name="username" placeholder="Andreas"></input>
-        <h1>password</h1>
-        <input type="password" name="password" placeholder="********"></input>
-        <button type="submit" href="PHP/login.php">Login</button>
-    </form>
-    <a href="PHP/createAcc.php">Create a new account</a>
-    ';
+    $defaultHomePage = '
+        <div class="loginbox">
+            <h1>Sign in</h1>
+            <form action="PHP/login.php" method="POST">
+                <p>Username</p>
+                <input type="text" name="username" placeholder="Enter Username"></input>
+                <p>Password</p>
+                <input type="password" name="password" placeholder="********"></input>
+                <input type="submit" href="PHP/login.php" value="Login"></input>
+                <br/> 
+                <a href="PHP/createAcc.php">Create a new account</a>
+            </form>
+        </div>';
 
     $loggedInHomePage = '<h1>You are logged in as '.$username.' </h1>
     <a href="PHP/Admin/handleUsers.php"> See all users </a><br>

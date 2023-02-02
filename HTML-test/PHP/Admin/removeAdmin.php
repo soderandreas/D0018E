@@ -14,7 +14,7 @@
     session_start();
     if(isset($_SESSION["UserID"])){
         $id = $_SESSION["UserID"];
-        $custID = $_GET["id"];
+        $adminID = $_GET["id"];
 
         $sql = "SELECT Type FROM UserType WHERE ID = :i LIMIT 1";
 
@@ -32,18 +32,16 @@
         $usertype = $type;
     }
 
-    if($usertype == 3){
-        $sql2 = "UPDATE UserType SET Type = 2 WHERE ID = :i";
+    if ($usertype == 3){
+        $sql2 = "UPDATE UserType SET Type = 1 WHERE ID = :i";
 
         $result2 = $conn->prepare($sql2);
 
-        $result2->bindValue(':i', $custID, PDO::PARAM_STR);
+        $result2->bindValue(':i', $adminID, PDO::PARAM_STR);
         $result2->execute();
 
         header("Location: handleUsers.php");
     } else {
         header("Location: ../../index.php");
     }
-
-
 ?>

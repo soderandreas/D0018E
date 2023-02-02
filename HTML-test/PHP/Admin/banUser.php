@@ -32,9 +32,7 @@
         $usertype = $type;
     }
 
-    if($usertype != 2 && $usertype != 3){ // If user is not an admin
-        header("Location: ../../index.php");
-    } else {
+    if($usertype == 2 || $usertype == 3){ // If user is an admin
         $sql2 = "INSERT INTO BanUser(CustomerID, AdminID) VALUES (:ci, :ai)";
 
         $result2 = $conn->prepare($sql2);
@@ -44,5 +42,7 @@
         $result2->execute();
 
         header("Location: handleUsers.php");
+    } else {
+        header("Location: ../../index.php");
     }
 ?>
