@@ -44,5 +44,6 @@
     ';
 
     $loggedInHomePage = '<h1>You are logged in as '.$username.' </h1>
+    <a href="PHP/Admin/handleUsers.php"> See all users </a><br>
     <a href="PHP/logout.php"> Log out </a>';
 ?>

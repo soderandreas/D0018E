@@ -37,6 +37,7 @@
         #echo "test", $safeUsername, " ", $safePassword, " ", $safeEmail, " ", $safeFname, " ", $safeLname, " ", $safeGender, " ", $safePhone, " ", $safeAge;
 
         $sql_query = "INSERT INTO Users(Username, Password, FName, LName, Mail, Gender, PhoneNum, Age) VALUES (:u, :pw, :f, :l, :m, :g, :p, :a)";
+
 		$result = $conn->prepare($sql_query);
 
         $result->bindValue(':u', $safeUsername, PDO::PARAM_STR);
@@ -49,6 +50,25 @@
         $result->bindValue(':a', $safeAge, PDO::PARAM_STR);
 
         $result->execute();
+
+        $sql_get_id = "SELECT ID FROM Users WHERE Username = :name AND Password = :pass";		
+        $result2 = $conn->prepare($sql_get_id);
+
+        $result2->bindValue(':name', $safeUsername, PDO::PARAM_STR);
+        $result2->bindValue(':pass', $safePassword, PDO::PARAM_STR);
+        
+        $result2->execute();
+
+        while($data = $result2->fetch(PDO::FETCH_ASSOC)){
+            $id = $data['ID'];
+        }
+
+        $sql_query2 = "INSERT INTO UserType(ID, Type) VALUES (:id, 1)";
+        $result3 = $conn->prepare($sql_query2);
+
+        $result3->bindValue(':id', $id, PDO::PARAM_STR);
+
+        $result3->execute();
 
         $conn = null;
 
