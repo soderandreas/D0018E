@@ -1,20 +1,13 @@
 <?php
     include "secret.php";
-    $conn;
-	$mess = "ok";
-	try {
-        $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-        // set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        #echo "Connected successfully";
-    } catch(PDOException $e) {
-        echo "Connection failed: " . $e->getMessage();
-    }
+    include "functions.php";
 
-    if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password-repeat']) && isset($_POST['email']) && isset($_POST['fName']) && isset($_POST['lName']) && isset($_POST['gender']) && isset($_POST['phone']) && isset($_POST['age'])){
-        if($_POST['password'] != $_POST['password-repeat']){
+    $conn = establishConnection($host, $dbname, $user, $pass);
+
+    if(isset($_POST['username']) && isset($_POST['password']) /*&& isset($_POST['password-repeat'])*/ && isset($_POST['email']) && isset($_POST['fName']) && isset($_POST['lName']) && isset($_POST['gender']) && isset($_POST['phone']) && isset($_POST['age'])){
+        /*if($_POST['password'] != $_POST['password-repeat']){
             header("Location: createAcc.php?err=1");
-        }
+        }*/
 
         $unsafeUsername = $_POST['username'];
         $unsafePassword = $_POST['password'];
@@ -24,6 +17,8 @@
         $unsafeGender   = $_POST['gender'];
         $unsafePhone    = $_POST['phone']; 
         $unsafeAge      = $_POST['age'];
+
+        #echo $unsafeUsername, " ", $unsafePassword, " ", $unsafeEmail, " ", $unsafeFname, " ", $unsafeLname, " ", $unsafeGender, " ", $unsafePhone, " ", $unsafeAge;
 
         $safeUsername = filter_var($unsafeUsername, FILTER_SANITIZE_STRING);
         $safePassword = filter_var($unsafePassword, FILTER_SANITIZE_STRING);

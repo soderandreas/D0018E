@@ -2,7 +2,7 @@
 
 ?>
 
-<html>
+<!--<html>
     <head>
         <title>
             Create a new Account
@@ -58,4 +58,53 @@
             <p>Already have an account? <a href="../index.php">Sign in</a>.</p>
         </div>
     </body>
+</html>-->
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/424262454915104771/526526923904647180/sambung.png">
+	<title>Register</title>
+	<link rel="stylesheet" type="text/css" href="../createAcc.css">
+
+</head>
+<body>
+	<div class="loginbox">
+		<img alt="" src="../WebsitePictures/avatar.png" class="avatar">
+		<h1>Register</h1>
+		<form action="createAccBack.php" method="POST">
+			<div class="logincredentials">
+				<div class="left">
+					<p>Name</p>
+                    <input type="text" placeholder="Enter Name" name="fName" id="fName" required>
+					<p>Age</p>
+                    <input type="Age" id="age" name="age" placeholder="Enter Age">
+					<p>Phone number</p>
+                    <input type="tel" placeholder="070xxxxxxx" name="phone" id="phone" required>
+					<p>Username</p>
+                    <input type="text" placeholder="Enter Username" name="username" id="username" required>
+				</div>
+				<div class="right">
+					<p>Surname</p>
+                    <input type="text" placeholder="Enter Surname" name="lName" id="lName" required>
+					<p>Gender</p>
+					<select name="gender" class="gender-input" required>
+						<option value="" selected>Gender</option>
+						<option value="M">Male</option>
+						<option value="F">Female</option>
+					</select>
+					<p>Email</p>
+                    <input type="Email" placeholder="Enter Email" name="email" id="email" required>
+					<p>Password</p>
+                    <input type="password" placeholder="Enter Password" name="password" id="psw" required>
+				</div>
+				<div class="btns">
+					<button onclick="button()" type="submit" id="submit" class="button" value="Register">Submit</button>
+				    <a href="../index.php" style="margin-left: 30%;">Already have a account?</a>
+			    </div>
+		    </div>
+		</form>
+	</div>
+
+</body>
 </html>

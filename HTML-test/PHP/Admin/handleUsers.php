@@ -1,15 +1,8 @@
 <?php
     include "../secret.php";
-    $conn;
-	$mess = "ok";
-	try {
-        $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-        // set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        #echo "Connected successfully";
-    } catch(PDOException $e) {
-        echo "Connection failed: " . $e->getMessage();
-    }
+    include "../functions.php";
+    
+    $conn = establishConnection($host, $dbname, $user, $pass);
 
     session_start();
 
@@ -27,7 +20,7 @@
         $name = "";
         $type = "";
 
-        while($data = $result->fetch(PDO::FETCH_ASSOC)){//Tar ut användarens namn, lösenord och id från talbellen. Kollar även om användaren är admin
+        while($data = $result->fetch(PDO::FETCH_ASSOC)){
 			$name = $data['Username'];
             $type = $data['Type'];
 		}
