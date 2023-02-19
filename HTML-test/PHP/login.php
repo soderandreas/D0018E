@@ -28,12 +28,12 @@
             $id = $data['ID'];
         }
 
-        $sql_query2 = "SELECT Username FROM Users INNER JOIN BanUser ON ID = customerID";
+        $sql_query2 = "SELECT CustomerID FROM BanUser";
         $result2 = $conn->prepare($sql_query2);
         $result2->execute();
 
         while($data2 = $result2->fetch(PDO::FETCH_ASSOC)){
-            if($data2['Username'] == $name){
+            if($data2['CustomerID'] == $id){
                 $banned = true;
             }
         }

@@ -64,7 +64,7 @@
     $result5->execute();
 
     // Send user to correct order page
-    header("Location: PHP/order.php?oid=" . $orderID);
+    header("Location: order.php?oid=" . $orderID);
 
     //echo $orderID . " " . $userID;
 ?>

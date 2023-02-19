@@ -4,62 +4,38 @@
 
     $conn = establishConnection($host, $dbname, $user, $pass);
 
-    $usertype = checkUserType($conn);
+    session_start();
 
-    $assetID = $_GET["asset"];
+    if(!isset($_SESSION["UserID"])){ // if not logged in
+        header("Location: ../index.php");
+        exit();
+    } else {
+        $id = $_SESSION["UserID"];
+    }
 
-    $sql_asset = "SELECT DISTINCT Name, Description, Price, Stock FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.ID = :id";
-    $result = $conn->prepare($sql_asset);
+    $output = "";
 
-    $result->bindValue(':id', $assetID, PDO::PARAM_STR);
+    $sql_orders = "SELECT DISTINCT OrderID, SUM(OrderProducts.Price) AS TotalPrice FROM OrderProducts INNER JOIN Orders ON OrderProducts.OrderID = Orders.ID INNER JOIN Assets ON OrderProducts.AssetID = Assets.ID WHERE Orders.UserID = :id GROUP BY OrderID ORDER BY OrderID";
+
+    $result = $conn->prepare($sql_orders);
+
+    $result->bindValue(':id', $id, PDO::PARAM_STR);
 
     $result->execute();
 
-    // used to store globals values
-    $name = "";
-    $description = "";
-    $price = "";
-    $stock = "";
-
     while($data = $result->fetch(PDO::FETCH_ASSOC)){
-        $name = $data['Name'];
-        $description = $data['Description'];
-        $price = $data['Price'];
-        $stock = $data['Stock'];
+        $output .= "<a href='order.php?oid=".$data['OrderID']."'><div class='order-container'><h2> Order: ".$data['OrderID']." </h2>
+                    <h3> Total price: $".$data['TotalPrice']." </h3></div></a>";
     }
 
-    $assetHTML = "
-        <div>
-            <h1>".$name."</h1>
-            <h2> Description: ".$description."</h2>
-            <h4> Price: ".$price." $</h4>
-            <h4> Current Stock: ".$stock."</h4>
-        </div>";
-
-
-    $sql_pictures = "SELECT PictureName FROM AssetPictures WHERE AssetID = :id";
-
-    $result = $conn->prepare($sql_pictures);
-
-    $result->bindValue(':id', $assetID, PDO::PARAM_STR);
-
-    $result->execute();
-
-    $picturesHTML = "<div>";
-
-    while($data = $result->fetch(PDO::FETCH_ASSOC)){
-        $picturesHTML .= "
-            ";
-    }
-
-    $picturesHTML = "</div>"
 ?>
 
 <html>
     <head>
         <meta charset="utf-8">
-        <title><?php echo $name;?></title>
-	    <link type="text/css" rel="Stylesheet" href="../style.css" />
+        <title>Current Orders</title>
+	    <link rel="stylesheet" type="text/css" href="../style.css">
+        <script type="text/Javascript" src="../javaScript.js"></script>
         <link rel='stylesheet' type='text/css' href='../products.css'>
         <script type='text/javascript' src='products.js'></script>
         <script src=”https://code.jquery.com/jquery-3.6.0.min.js” integrity=”sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=” crossorigin=”anonymous”></script>
@@ -71,13 +47,18 @@
         <link href='https://raw.githubusercontent.com/daneden/animate.css/master/animate.css' rel='stylesheet'>
     </head>
     <body>
-        <div>
-            <?php echo getHeader(5); ?>
-            <a href="../index.php">Go Back</a>
-            <?php
-                echo $assetHTML;
-                echo $picturesHTML;
-            ?>
-        </div>
+        <?php
+            echo getHeader(3);
+        ?>
+        <h2><a href="../index.php">Go back</a></h2>
+        <h1>All current orders</h1>
+        <hr>
+        <?php
+            if($output == ""){
+                echo "You currently have no orders";
+            } else {
+                echo $output;
+            }
+        ?>
     </body>
 </html>
