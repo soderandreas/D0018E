@@ -62,6 +62,49 @@ function removeFromCart(assetID){
 	xhttp.send();
 }
 
+function replyComment(commentID){
+    console.log("test");
+    document.getElementById(commentID).style.display = "block";
+}
+
+
+// Handle star rating
+
+const ratingValue = document.querySelector(".stars input")
+const star = document.querySelectorAll(".stars .star")
+
+star.forEach((item, index) => {
+    item.addEventListener('click', function() {
+        ratingValue.value = index + 1
+
+        for(let i = 0; i < star.length; i++){
+            if(i <= index) {
+                star[i].classList.remove('disable')
+            } else {
+                star[i].classList.add('disable')
+            }
+        }
+    })
+})
+
+
+// Sort by
+
+function SortBy(){
+    var url = window.location.href
+    var sortType = document.getElementById("products").value
+    url = new URLSearchParams(url.search)
+    url.delete('sort')
+    url += '?sort='+sortType
+    window.location.href = url
+}
+
+function startValue(optionID){
+    //console.log("test");
+    //console.log(optionID);
+    document.getElementById(optionID).selected = true;
+}
+
 titleLength();
 descriptionLength();
 TITLE.addEventListener("keyup", titleLength);

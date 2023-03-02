@@ -14,13 +14,14 @@
     }
 
     $error = $_GET["err"];
+    $sortType = $_GET['sort'];
 
     $username = "";
     $loggedIn = false;
 
     session_start();
 
-    if(isset($_SESSION["UserID"]) && $error == null){
+    if(isset($_SESSION["UserID"]) && $error != 2){
         $loggedIn = true;
         $id = $_SESSION["UserID"];
         
@@ -32,6 +33,10 @@
 
         $data = $result->fetch(PDO::FETCH_ASSOC);
 		$username = $data['Username'];
+
+        if($error == 3){
+            echo "You have tried to order more products than there are in stock";
+        }
 
     } else if ($error == 2){
         echo "You have been banned!";
@@ -70,7 +75,7 @@
         </title>
     </head>
 
-    <body>
+    <body onload="startValue('<?php echo $sortType ?>')">
         <?php
             if(!$loggedIn){
                 echo $defaultHomePage;

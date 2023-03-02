@@ -2,10 +2,46 @@
     include "secret.php";
     include "functions.php";
 
+    function getRating($conn, $currID){
+        $sql_avgRating = "SELECT DISTINCT AVG(Stars) AS RatingAvg FROM Rating INNER JOIN Comment ON Comment.ID = CommentID WHERE AssetID = :aid";
+
+        $result = $conn->prepare($sql_avgRating);
+        $result->bindValue(':aid', $currID, PDO::PARAM_STR);
+
+        $result->execute();
+
+        $data = $result->fetch(PDO::FETCH_ASSOC);
+
+        $output = "<ul class='rating'>";
+
+        for($i = 0; $i < 5; $i++){
+            if (($i + 0.49) < $data['RatingAvg']){
+                $output .= "<li class='fa fa-star'></li>";
+            } else {
+                $output .= "<li class='fa fa-star disable'></li>";
+            }
+        }
+
+        $output .= "</ul>";
+
+        return $output;
+    }
+
     function getAssets($conn){
+        $sortType = $_GET['sort'];
+        $search = $_GET['search'];
         $assets = "";
 
-        $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID";
+        if($sortType == "old") {
+            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%' ORDER BY Assets.ID DESC";
+        } else if($sortType == "rating") {
+            $sql_assets = "SELECT DISTINCT AVG(Stars) AS RatingAvg, Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID INNER JOIN Comment ON Comment.AssetID = Assets.ID INNER JOIN Rating ON Rating.CommentID = Comment.ID WHERE Assets.Name LIKE '%".$search."%' GROUP BY Assets.ID, PictureName ORDER BY RatingAvg DESC";
+        } else if($sortType == "comment"){
+            $sql_assets = "SELECT DISTINCT COUNT(Comment.ID) AS NumOfComments, Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID INNER JOIN Comment ON Comment.AssetID = Assets.ID WHERE Assets.Name LIKE '%".$search."%' GROUP BY Assets.ID, PictureName ORDER BY NumOfComments DESC";
+        } else {
+            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%'";
+        }
+
         $result = $conn->prepare($sql_assets);
 
         $result->execute();
@@ -14,20 +50,6 @@
         while($data = $result->fetch(PDO::FETCH_ASSOC)){
             if($currID == null || $currID != $data['ID']){ // Only add asset for first picture associated with asset
                 $currID = $data['ID'];
-                /*$assets .= "
-                <a href = 'PHP/product.php?asset=".$currID."'>
-                    <div class='product-container'>
-                        <div>
-                            <img src='/AssetPictures/".$data['PictureName']."' >
-                        </div>
-                        <div>
-                            <h2>". $data['Name'] ."</h2>
-                            <h3>". $data['Price'] ." $<h3>
-                            <h4> Current Stock: ". $data['Stock'] ."</h4>  
-                        </div>
-                    </div>
-                </a>";*/
-                /*<img class='pic-1' src='/AssetPictures/".getPictures($conn)."'>*/
                 $assets .= "
                     <div class='col-md-3 col-sm-6'>
                         <div class='product-grid3'>    
@@ -45,13 +67,7 @@
                                 <div class='price'>
                                     $".$data['Price']."
                                 </div>
-                                <ul class='rating'>
-                                    <li class='fa fa-star'></li>
-                                    <li class='fa fa-star'></li>
-                                    <li class='fa fa-star'></li>
-                                    <li class='fa fa-star disable'></li>
-                                    <li class='fa fa-star disable'></li>
-                                </ul>
+                                ".getRating($conn, $currID)."
                             </div>
                         </div>
                     </div>
@@ -103,6 +119,10 @@
         $username = $name;
     }
 
+    if($_GET['search'] != null){
+        $searchValue = "<p>You searched for: ".$_GET['search']."</p>";
+    }
+
     $defaultHomePage = '
         <div class="loginbox">
             <img alt="" src="WebsitePictures/avatar.png" class="avatar">
@@ -122,6 +142,14 @@
         <h1>You are logged in as ".$username." </h1>
         <div class='container'>
             <h3 class='h3'>Products </h3>
+            ".$searchValue."
+            <label for='products'>Sort by:</label>
+            <select id='products' onchange='SortBy()'>
+                <option value='new' id='new'>Newest</option>
+                <option value='old' id='old'>Oldest</option>
+                <option value='rating' id='rating'>Rating</option>
+                <option value='comment' id='comment'>Comments</option>
+            </select>
             <div class='row'>
                 ".getAssets($conn)."
             </div>

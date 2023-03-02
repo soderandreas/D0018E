@@ -64,6 +64,11 @@
             <a href='".$url[$page][$i+1]."'>
                 <i class='fa fa-shopping-basket'></i>
             </a>
+        </li>
+        <li>
+            <a id='kakan' href='".$url[$page][$i+2]."' class='menu-item'>
+                <img src='https://media.discordapp.net/attachments/486549868723175426/511696515895656450/depositphotos_119671422-stock-illustration-human-man-avatar-person-profile_1.jpg' id='lola' alt=''>
+            </a>
         </li>";
         return $output;
     }
@@ -75,20 +80,22 @@
 
     // Handles the header for different pages
     function getHeader($page){
-        // 0 = homepage, 1 = Handle Users, 2 = Add New Asset, 3 = Current Orders, 4 = About Us, 5 = Order, Product or Shopping Cart
+        // 0 = homepage, 1 = Handle Users, 2 = Add New Asset, 3 = Current Orders, 4 = About Us, 5 = Order, Product or Shopping Cart, 6 = Edit asset
         $whatPage = [["Handle Users","Add New Asset","Current Orders", "About Us"],
                      ["Products","Add New Asset","Current Orders","About Us"], 
                      ["Products","Handle Users","Current Orders","About Us"], 
                      ["Products","Handle Users","Add New Asset","About Us"], 
                      ["Products","Handle Users", "Add New Asset", "Current Orders"],
+                     ["Products", "Handle Users", "Add New Asset", "Current Orders", "About Us"],
                      ["Products", "Handle Users", "Add New Asset", "Current Orders", "About Us"]];
 
-        $urlPage = [["PHP/Admin/handleUsers.php", "PHP/Admin/newAsset.php", "PHP/currentOrders.php", "#", "PHP/logout.php", "PHP/shoppingCart.php"],
-                    ["../../index.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php"],
-                    ["../../index.php", "handleUsers.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php"],
-                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "#", "logout.php", "shoppingCart.php"],
+        $urlPage = [["PHP/Admin/handleUsers.php", "PHP/Admin/newAsset.php", "PHP/currentOrders.php", "#", "PHP/logout.php", "PHP/shoppingCart.php", "PHP/userInfo.php"],
+                    ["../../index.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"],
+                    ["../../index.php", "handleUsers.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"],
+                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "#", "logout.php", "shoppingCart.php", "userInfo.php"],
                     ["", "", "", ""],
-                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "currentOrders.php", "#", "logout.php", "shoppingCart.php"]];
+                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "currentOrders.php", "#", "logout.php", "shoppingCart.php", "userInfo.php"],
+                    ["../../index.php", "handleUsers.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"]];
 
         $output = "
         <div class='aa1'>
@@ -151,11 +158,6 @@
                         </a>
                     </li>
                     ". deskHeader($whatPage, $urlPage, $page) ."
-                    <li>
-                        <a id='kakan' href='#' class='menu-item'>
-                            <img src='https://media.discordapp.net/attachments/486549868723175426/511696515895656450/depositphotos_119671422-stock-illustration-human-man-avatar-person-profile_1.jpg' id='lola' alt=''>
-                        </a>
-                    </li>
                 </ul>
                 <div class='search-form'>
                     <form>

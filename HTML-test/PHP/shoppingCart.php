@@ -21,7 +21,7 @@
         $basket = "";
 
         while($data = $result->fetch(PDO::FETCH_ASSOC)){
-            $basket .= "<div id=".$data['AssetID']."> <p> ".$data['Name'].", Price: $".$data['Price'].", Stock: ".$data['Stock'].", amount in basket: ".$data['Num']." </p>
+            $basket .= "<div id=".$data['AssetID']."> <a href='product.php?asset=".$data['AssetID']."'><h2>".$data['Name']."</h2></a><h4> Price: $".$data['Price']."</h4> <h4>Stock: ".$data['Stock']."</h4> <h4> amount in basket: ".$data['Num']." </h4>
                         <a href=# onclick='removeFromCart(".$data['AssetID'].")'> remove </a> <br> </div> ";
         }
 

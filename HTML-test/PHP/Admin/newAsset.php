@@ -50,10 +50,10 @@
             <form action="newAssetBack.php" method="POST" enctype="multipart/form-data">
                 <h3><a href="../../index.php">Go Back</a></h3>
                 <label for="title">Title:</label>
-                <input type="text" id="assetTitle" name="title" required><br>
+                <input type="text" id="assetTitle" name="title" maxlength="60" required><br>
                 <span id="titleChars">60 characters remaining.</span><br>
                 <label for="description">Description:</label>
-                <input type="text" id="assetDescription" name="description" required><br>
+                <input type="text" id="assetDescription" name="description" maxlength="1000" required><br>
                 <span id="descriptionChars">1000 characters remaining.</span><br>
                 <label for="price">Price:</label>
                 <input type="number" id="price" name="price" required><br>

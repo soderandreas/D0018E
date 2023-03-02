@@ -24,8 +24,19 @@
     $result->execute();
 
     while($data = $result->fetch(PDO::FETCH_ASSOC)){
-        $output .= "<a href='order.php?oid=".$data['OrderID']."'><div class='order-container'><h2> Order: ".$data['OrderID']." </h2>
-                    <h3> Total price: $".$data['TotalPrice']." </h3></div></a>";
+        $output .= "<div class='order-container'>
+                        <a href='order.php?oid=".$data['OrderID']."'>
+                            <div class='order_info'>
+                                <h2> Order: ".$data['OrderID']." </h2>
+                                <h3> Total price: $".$data['TotalPrice']." </h3>
+                            </div>
+                        </a>
+                        <a href=cancelOrder.php?order=".$data['OrderID'].">
+                            <div class='order_cancel'>
+                                <h3>Cancel Order</h3>
+                            </div>
+                        </a>
+                    </div>";
     }
 
 ?>
