@@ -1,5 +1,4 @@
 <?php
-
     function establishConnection($host, $dbname, $user, $pass){
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
@@ -89,13 +88,13 @@
                      ["Products", "Handle Users", "Add New Asset", "Current Orders", "About Us"],
                      ["Products", "Handle Users", "Add New Asset", "Current Orders", "About Us"]];
 
-        $urlPage = [["PHP/Admin/handleUsers.php", "PHP/Admin/newAsset.php", "PHP/currentOrders.php", "#", "PHP/logout.php", "PHP/shoppingCart.php", "PHP/userInfo.php"],
-                    ["../../index.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"],
-                    ["../../index.php", "handleUsers.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"],
-                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "#", "logout.php", "shoppingCart.php", "userInfo.php"],
+        $urlPage = [["PHP/Admin/handleUsers.php", "PHP/Admin/newAsset.php", "PHP/currentOrders.php", "#", "PHP/logout.php", "PHP/shoppingCart.php", "PHP/userInfo.php", "."],
+                    ["../../index.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php", "../../index.php"],
+                    ["../../index.php", "handleUsers.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php", "../../index.php"],
+                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "#", "logout.php", "shoppingCart.php", "userInfo.php", "../index.php"],
                     ["", "", "", ""],
-                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "currentOrders.php", "#", "logout.php", "shoppingCart.php", "userInfo.php"],
-                    ["../../index.php", "handleUsers.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php"]];
+                    ["../index.php", "Admin/handleUsers.php", "Admin/newAsset.php", "currentOrders.php", "#", "logout.php", "shoppingCart.php", "userInfo.php", "../index.php"],
+                    ["../../index.php", "handleUsers.php", "newAsset.php", "../currentOrders.php", "#", "../logout.php", "../shoppingCart.php", "../userInfo.php", "../../index.php"]];
 
         $output = "
         <div class='aa1'>
@@ -153,14 +152,14 @@
             <nav class='menu'>
                 <ul>
                     <li>
-                        <a href='#'>
+                        <a href='".end($urlPage[$page])."'>
                             <img src='https://cdn.discordapp.com/attachments/424262454915104771/526526923904647180/sambung.png' class='SAMBUNGlogo' alt=''>
                         </a>
                     </li>
                     ". deskHeader($whatPage, $urlPage, $page) ."
                 </ul>
                 <div class='search-form'>
-                    <form>
+                    <form action='".end($urlPage[$page])."'>
                         <input type='text' name='search' placeholder='Search' id='lalala'>
                     </form>
                 </div>

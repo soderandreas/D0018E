@@ -2275,3 +2275,19 @@ h3.h3{
 #kakan{
     margin-top: 6px;
 }
+.media-body{
+    margin-left: 25px;
+}
+.row{
+    margin-top: 10px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}

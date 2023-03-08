@@ -17,9 +17,11 @@
     $rating = $_POST['rating'];
 
     if($resID == NULL){
-        $sql_insert = "INSERT INTO Comment(UserID, AssetID, CommentText) VALUES (:uid, :aid, :c)";
+        $sql_insert = "INSERT INTO Comment(UserID, AssetID, CommentText, PostTime) VALUES (:uid, :aid, :c, UTC_TIMESTAMP)";
 
         if(isset($comment) && $assetID != NULL){
+            $conn->beginTransaction();
+
             $result = $conn->prepare($sql_insert);
 
             $result->bindValue(':uid', $userID, PDO::PARAM_STR);
@@ -29,7 +31,8 @@
             $result->execute();
             
 
-            if($rating >= 1 || $rating <= 5){ // if rating is between 1 and 5
+            if($rating >= 1 && $rating <= 5){ // if rating is between 1 and 5
+                echo $rating;
                 $sql_commID = "SELECT ID FROM Comment ORDER BY ID desc LIMIT 1";
                 $result = $conn->prepare($sql_commID);
                 $result->execute();
@@ -48,6 +51,8 @@
                 $result->execute();
             }
 
+            $conn->commit();
+
             header("Location: product.php?asset=" . $assetID);
             
         } else if ($assetID != NULL) {  // if no comment
@@ -56,7 +61,7 @@
             header("Location: ../index.php");
         }
     } else {
-        $sql_insert = "INSERT INTO Comment(UserID, AssetID, CommentText, ResponseTo) VALUES (:uid, :aid, :c, :r)";
+        $sql_insert = "INSERT INTO Comment(UserID, AssetID, CommentText, ResponseTo, PostTime) VALUES (:uid, :aid, :c, :r, UTC_TIMESTAMP)";
         if(isset($comment) && $assetID != NULL){
             $result = $conn->prepare($sql_insert);
 

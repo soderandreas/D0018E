@@ -48,6 +48,20 @@ function addToCart(assetID){
 	xhttp.send();
 }
 
+function addToCartProduct(assetID){
+    let num = document.getElementById("amountProd").value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Typical action to be performed when the document is ready:
+            //document.getElementById("demo").innerHTML = xhttp.responseText;
+            console.log(xhttp.responseText);
+        }
+    }
+    xhttp.open("GET", "addShoppingCart.php?asset="+assetID+"&num="+num, true);
+	xhttp.send();
+}
+
 // Remove a item from the cart
 function removeFromCart(assetID){
     var xhttp = new XMLHttpRequest();
@@ -60,6 +74,47 @@ function removeFromCart(assetID){
     }
     xhttp.open("GET", "removeShoppingCart.php?asset="+assetID, true);
 	xhttp.send();
+}
+
+// Change amount of item in cart
+function amountInCart(test){
+    console.log(test);
+    if((test.keyCode < 106 && test.keyCode > 95) || (test.keyCode < 58 && test.keyCode > 47)){
+        console.log("keyup in", test.originalTarget.id, test.target.valueAsNumber);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // Typical action to be performed when the document is ready:
+                console.log(xhttp.responseText);
+            }
+        }
+        xhttp.open("GET", "updateCart.php?asset="+test.originalTarget.id+"&num="+test.target.valueAsNumber, true);
+        xhttp.send();
+
+        let price = document.getElementById("priceFor"+test.originalTarget.id).textContent;
+        price = price.replace('$', '');
+        let newPrice = price*test.target.valueAsNumber;
+        let prevPrice = document.getElementById("totalFor"+test.originalTarget.id).textContent;
+        prevPrice = prevPrice.replace('$', '');
+        document.getElementById("totalFor"+test.originalTarget.id).textContent = "$"+newPrice;
+
+        let totalPrice = document.getElementById("totalPrice").textContent;
+        totalPrice = totalPrice.replace('$', '');
+        console.log("newPrice: "+newPrice+" prevPrice: "+prevPrice);
+        if(prevPrice < newPrice){
+            //console.log("oldTotal: "+totalPrice);
+            let newTotal = Number(totalPrice)+Number(newPrice)-Number(prevPrice);
+            //console.log("newTotal: "+newTotal);
+            document.getElementById("totalPrice").textContent = "$"+newTotal;
+        } else if (prevPrice > newPrice) {
+            console.log("oldTotal: "+totalPrice);
+            let newTotal = Number(totalPrice)-(Number(prevPrice)-Number(newPrice));
+            console.log("newTotal: "+newTotal);
+            document.getElementById("totalPrice").textContent = "$"+newTotal;
+        }
+    } else {
+        
+    }
 }
 
 function replyComment(commentID){
@@ -87,7 +142,6 @@ star.forEach((item, index) => {
     })
 })
 
-
 // Sort by
 
 function SortBy(){
@@ -103,6 +157,37 @@ function startValue(optionID){
     //console.log("test");
     //console.log(optionID);
     document.getElementById(optionID).selected = true;
+}
+
+const AMOUNT = document.getElementsByClassName("amountIn");
+
+for (var i = 0; i < AMOUNT.length; i++) {
+    const VALUE = AMOUNT[i].value;
+    AMOUNT[i].addEventListener('keyup', amountInCart, VALUE[i]);
+}
+
+// Slideshow
+
+let slideIndex = 1;
+
+function changeSlides(n) {
+    showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+    showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+    let i;
+    let slides = document.getElementsByClassName("item-photo");
+    if (n > slides.length) {slideIndex = 1}    
+    if (n < 1) {slideIndex = slides.length}
+    console.log(slideIndex);
+    for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";  
+    }
+    slides[slideIndex-1].style.display = "flex";  
 }
 
 titleLength();

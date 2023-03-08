@@ -16,6 +16,12 @@
     $result->bindValue(':id', $userID, PDO::PARAM_STR);
 
     $result->execute();
+    $data = $result->fetch(PDO::FETCH_ASSOC);
+
+    if($data['NumOfProd'] == null){ // if basket empty
+        header("Location: ../index.php?err=4");
+        exit();
+    }
 
     // Check if all asset are in stock
 
@@ -24,17 +30,19 @@
     $result2 = $conn->prepare($sql_stock);
 
     while($data = $result->fetch(PDO::FETCH_ASSOC)){
-        echo "test0";
         $result2->bindValue(':id', $data['AssetID'], PDO::PARAM_STR);
         $result2->execute();
         $data2 = $result2->fetch(PDO::FETCH_ASSOC);
-        if(($data2['Stock'] - $data['NumOfProd']) < 0){
+        if(($data2['Stock'] - $data['NumOfProd']) < 0 && $data['NumOfProd'] != null){
             header("Location: ../index.php?err=3");
             exit();
         }
     }
 
     // Create new input into Orders
+
+    $conn->beginTransaction();
+
     $sql_order = "INSERT INTO Orders(UserID) VALUES (:uid)";
 
     $result3 = $conn->prepare($sql_order);
@@ -59,6 +67,7 @@
     echo $orderID;
 
     // Insert into OrderProducts and lower stock
+
     $sql_products = "INSERT INTO OrderProducts(OrderID, AssetID, Price) Values (:oid, :aid, :p)";
     $sql_stock = "UPDATE Assets SET Stock = Stock - 1 WHERE ID = :id";
 
@@ -87,6 +96,8 @@
     $result6->bindValue(':uid', $userID, PDO::PARAM_STR);
 
     $result6->execute();
+
+    $conn->commit();
 
     // Send user to correct order page
     header("Location: order.php?oid=" . $orderID);
