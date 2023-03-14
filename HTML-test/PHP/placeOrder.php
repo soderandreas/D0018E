@@ -19,7 +19,7 @@
     $data = $result->fetch(PDO::FETCH_ASSOC);
 
     if($data['NumOfProd'] == null){ // if basket empty
-        header("Location: ../index.php?err=4");
+        header("Location: shoppingCart.php?err=1");
         exit();
     }
 
@@ -29,12 +29,14 @@
 
     $result2 = $conn->prepare($sql_stock);
 
+    $result->execute();
+
     while($data = $result->fetch(PDO::FETCH_ASSOC)){
         $result2->bindValue(':id', $data['AssetID'], PDO::PARAM_STR);
         $result2->execute();
         $data2 = $result2->fetch(PDO::FETCH_ASSOC);
         if(($data2['Stock'] - $data['NumOfProd']) < 0 && $data['NumOfProd'] != null){
-            header("Location: ../index.php?err=3");
+            header("Location: shoppingCart.php?err=2");
             exit();
         }
     }
@@ -43,7 +45,7 @@
 
     $conn->beginTransaction();
 
-    $sql_order = "INSERT INTO Orders(UserID) VALUES (:uid)";
+    $sql_order = "INSERT INTO Orders(UserID, OrderTime) VALUES (:uid, UTC_TIMESTAMP)";
 
     $result3 = $conn->prepare($sql_order);
 
@@ -97,8 +99,30 @@
 
     $result6->execute();
 
-    $conn->commit();
+    // Set status to in progress (Orders.Status = 0)
+    $sql_status = "UPDATE Orders SET Status = 0 WHERE ID = ".$orderID."";
+
+    $result7 = $conn->prepare($sql_status);
+
+    $result7->execute();
+
+    // Create event to change status after 3 min
+    $sql_event = "CREATE EVENT IF NOT EXISTS ".$orderID."StatusEvent ON SCHEDULE AT DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MINUTE) DO UPDATE Orders Set STATUS = 1 WHERE ID = ".$orderID."";
+
+    $result8 = $conn->prepare($sql_event);
+
+    $result8->execute();
+
+    // Commit transaction
+    echo "test1";
+    try{
+        $conn->commit();
+    } catch (Exception $e) {
+        echo 'Caught exception: ',  $e->getMessage(), "\n";
+    }
+    echo "test2";
 
     // Send user to correct order page
+    echo "test";
     header("Location: order.php?oid=" . $orderID);
 ?>

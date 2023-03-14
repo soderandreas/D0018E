@@ -30,7 +30,7 @@
                         <a class='thumbnail pull-left' href='product.php?asset=".$data['AssetID']."'> <img class='media-object' src='../AssetPictures/".$data2['PictureName']."' style='width: 72px; height: 72px;'> </a>
                         <div class='media-body'>
                             <h4 class='media-heading'><a href='product.php?asset=".$data['AssetID']."'>".$data['Name']."</a></h4>
-                            <h5 class='media-heading'> by <a href='#'>Brand name</a></h5>
+                            <h5 class='media-heading'> by <a href='#'>Samsung</a></h5>
                             <span>Status: </span><span class='text-success'><strong>".$data['Stock']." In Stock</strong></span>
                         </div>
                     </div>
@@ -84,6 +84,11 @@
 
         $totalPrice = $data['PriceTotal'];
 
+        if($_GET['err'] == 1){
+            $notification = notification("You can not place an order on nothing!", 3);
+        } else if ($_GET['err'] == 2){
+            $notification = notification("You are trying to buy more of one asset than there are currently available", 2);
+        }
     } else {
         header("Location: ../index.php");
         exit();
@@ -106,7 +111,10 @@
         <link href='https://raw.githubusercontent.com/daneden/animate.css/master/animate.css' rel='stylesheet'>
     </head>
     <body>
-        <?php echo getHeader(5); ?>
+        <?php 
+            echo getHeader(5);
+            echo $notification
+        ?>
         <?php
             /*if ($basket != null){
                 echo $basket . "<br> Total basket price: $" . $totalPrice . "<br>";

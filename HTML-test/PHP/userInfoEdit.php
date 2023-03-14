@@ -19,6 +19,12 @@
     $result->execute();
 
     $data = $result->fetch(PDO::FETCH_ASSOC);
+
+    if($_GET['err'] == 1){
+        $notification = notification("You must fill all fields!", 3);
+    } else if ($_GET['err'] == 2){
+        $notification = notification("Age too low or too high", 3);
+    }
 ?>
 
 <html>
@@ -38,6 +44,7 @@
     <body>
         <?php
             echo getHeader(5);
+            echo $notification;
         ?>
         <div>
             <form action="userInfoEditBack.php" method="POST">

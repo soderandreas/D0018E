@@ -50,7 +50,7 @@ h1{
     margin-bottom: 20px;
 }
 
-.loginbox input[type="Username"], input[type="password"], input[type= "Email"], input[type= "Name"],input[type= "Surname"],input[type="tel"],input[type= "Age"],input[type= "Gender"], input[type="text"]
+.loginbox input[type="Username"], input[type="password"], input[type= "Email"], input[type= "Name"],input[type= "Surname"],input[type="tel"],input[type= "Age"],input[type= "Gender"], input[type="text"], input[type="number"]
 {
     border: none;
     border-bottom: 1px solid #fff;
@@ -118,4 +118,51 @@ h1{
 .logincredentials .right select option{
     background: black;
     color: white;
+}
+
+/*added by me*/
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.about {
+    width: 100%;
+}
+.notification{
+    text-align: center;
+    font-size: 22px;
+    padding: 0px 10px 10px 10px;
+    border-radius: 0 0 20px 20px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.notification > p {
+    margin: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.notification.color1 > p {
+    background-color: #14a20087;
+}
+
+.notification.color2 > p {
+    background-color: #e3e30087;
+}
+
+.notification.color3 > p {
+    background-color: #a2000070;
+    color: white;
+}
+
+.notification.color1{
+    background-color: #14a20099;
+}
+
+.notification.color2{
+    background-color: #a2a20099;
+}
+
+.notification.color3{
+    background-color: #a2000099;
 }

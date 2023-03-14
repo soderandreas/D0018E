@@ -22,11 +22,16 @@
         exit();
     }
 
-    if(isset($_POST['title']) && isset($_POST['description']) && isset($_POST['price']) && isset($_POST['stock'])) { // Asset information
+    if(isset($_POST['title']) && isset($_POST['description']) && isset($_POST['price']) && isset($_POST['stock']) && $_POST['price'] > 0 && $_POST['stock'] >= 0 && strlen($_POST['description']) > 0 && strlen($_POST['title']) > 0 && strlen($_POST['description']) < 1001 && strlen($_POST['title']) < 61) { // Asset information
         $name = $_POST['title'];
         $description = $_POST['description'];
         $price = $_POST['price'];
         $stock = $_POST['stock'];
+
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        $description = filter_var($description, FILTER_SANITIZE_STRING);
+        $price = filter_var($price, FILTER_SANITIZE_STRING);
+        $stock = filter_var($stock, FILTER_SANITIZE_STRING);
 
         #echo $name, "<br>", $description, "<br>",  $price, "<br>", $stock;
 
@@ -96,5 +101,5 @@
 			exit();
         }
     }
-    header("Location: newAsset.php");
+    header("Location: newAsset.php?succ=1");
 ?>

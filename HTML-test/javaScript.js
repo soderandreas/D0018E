@@ -76,11 +76,63 @@ function removeFromCart(assetID){
 	xhttp.send();
 }
 
+// Change items in order
+function amountInOrder(test){
+    console.log("test", test.target.defaultValue);
+    console.log(test);
+    if((test.keyCode < 106 && test.keyCode > 95) || (test.keyCode < 58 && test.keyCode > 47) || test.keyCode == 8 || (test.keyCode == 90 && test.ctrlKey)){
+        if(!isNaN(test.target.valueAsNumber)){
+            newAmount = test.target.valueAsNumber;
+        } else {
+            newAmount = 0;
+        }
+
+        test.target.value = test.target.value < 0 ? 0 : test.target.value;
+
+        test.target.value = test.target.value > 10 ? 10 : test.target.value;
+
+        let oriPrice = document.getElementById("oriPriceFor"+test.originalTarget.id).textContent;
+        oriPrice = oriPrice.replace('$','');
+
+        let price = document.getElementById("currPriceFor"+test.originalTarget.id).textContent;
+        price = price.replace('$', '');
+        let newPrice = price*newAmount;
+        let prevPrice = document.getElementById("totalFor"+test.originalTarget.id).textContent;
+        prevPrice = prevPrice.replace('$', '');
+        document.getElementById("totalFor"+test.originalTarget.id).textContent = "$"+newPrice;
+
+        let totalPrice = document.getElementById("totalPrice").textContent;
+        totalPrice = totalPrice.replace('$', '');
+        //console.log("newPrice: "+newPrice+" prevPrice: "+prevPrice);
+
+        if(Number(test.target.defaultValue) < Number(test.target.value)){
+            newPrice = test.target.defaultValue*oriPrice + (test.target.value-test.target.defaultValue)*price;
+            document.getElementById("totalFor"+test.originalTarget.id).textContent = "$"+newPrice;
+            console.log("newPrice1: "+newPrice);
+        } else if (Number(test.target.defaultValue) >= Number(test.target.value)){
+            console.log(test.target.defaultValue, " ", test.target.value);
+            newPrice = test.target.value*oriPrice;
+            document.getElementById("totalFor"+test.originalTarget.id).textContent = "$"+newPrice;
+            console.log("newPrice2: "+newPrice);
+        }
+
+        if(prevPrice < newPrice){
+            let newTotal = Number(totalPrice)+Number(newPrice)-Number(prevPrice);
+            document.getElementById("totalPrice").textContent = "$"+newTotal;
+        } else if (prevPrice > newPrice) {
+            let newTotal = Number(totalPrice)-(Number(prevPrice)-Number(newPrice));
+            document.getElementById("totalPrice").textContent = "$"+newTotal;
+        }
+    } else {
+        
+    }
+}
+
+
 // Change amount of item in cart
 function amountInCart(test){
     console.log(test);
-    if((test.keyCode < 106 && test.keyCode > 95) || (test.keyCode < 58 && test.keyCode > 47)){
-        console.log("keyup in", test.originalTarget.id, test.target.valueAsNumber);
+    if((test.keyCode < 106 && test.keyCode > 95) || (test.keyCode < 58 && test.keyCode > 47) || test.keyCode == 8 || (test.keyCode == 90 && test.ctrlKey)){
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -88,12 +140,26 @@ function amountInCart(test){
                 console.log(xhttp.responseText);
             }
         }
-        xhttp.open("GET", "updateCart.php?asset="+test.originalTarget.id+"&num="+test.target.valueAsNumber, true);
+        console.log("keyup in", test.originalTarget.id, test.target.valueAsNumber);
+
+        let newAmount = null;
+
+        test.target.value = test.target.value < 0 ? 0 : test.target.value;
+
+        test.target.value = test.target.value > 10 ? 10 : test.target.value;
+
+        if(!isNaN(test.target.valueAsNumber)){
+            newAmount = test.target.valueAsNumber;
+        } else {
+            newAmount = 0;
+        }
+
+        xhttp.open("GET", "updateCart.php?asset="+test.originalTarget.id+"&num="+newAmount, true);
         xhttp.send();
 
         let price = document.getElementById("priceFor"+test.originalTarget.id).textContent;
         price = price.replace('$', '');
-        let newPrice = price*test.target.valueAsNumber;
+        let newPrice = price*newAmount;
         let prevPrice = document.getElementById("totalFor"+test.originalTarget.id).textContent;
         prevPrice = prevPrice.replace('$', '');
         document.getElementById("totalFor"+test.originalTarget.id).textContent = "$"+newPrice;
@@ -101,10 +167,9 @@ function amountInCart(test){
         let totalPrice = document.getElementById("totalPrice").textContent;
         totalPrice = totalPrice.replace('$', '');
         console.log("newPrice: "+newPrice+" prevPrice: "+prevPrice);
+
         if(prevPrice < newPrice){
-            //console.log("oldTotal: "+totalPrice);
             let newTotal = Number(totalPrice)+Number(newPrice)-Number(prevPrice);
-            //console.log("newTotal: "+newTotal);
             document.getElementById("totalPrice").textContent = "$"+newTotal;
         } else if (prevPrice > newPrice) {
             console.log("oldTotal: "+totalPrice);
@@ -164,6 +229,15 @@ const AMOUNT = document.getElementsByClassName("amountIn");
 for (var i = 0; i < AMOUNT.length; i++) {
     const VALUE = AMOUNT[i].value;
     AMOUNT[i].addEventListener('keyup', amountInCart, VALUE[i]);
+}
+
+const AMOUNTORDER = document.getElementsByClassName("amountInOrder");
+const ORIGINALAMOUNT = AMOUNTORDER;
+
+for (var i = 0; i < AMOUNTORDER.length; i++) {
+    const VALUEORDER = AMOUNTORDER[i].value;
+    console.log(VALUEORDER[i]);
+    AMOUNTORDER[i].addEventListener('keyup', amountInOrder, VALUEORDER[i]);
 }
 
 // Slideshow

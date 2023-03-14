@@ -22,7 +22,9 @@
     $result->execute();
     $data = $result->fetch(PDO::FETCH_ASSOC);
 
-    if($data['UserID'] == $_SESSION["UserID"]){
+    $usertype = checkUserType($conn);
+
+    if($data['UserID'] == $_SESSION["UserID"] || $usertype == 3){
         // Add items back to stock
         $sql_numOfStock = "SELECT COUNT(*) AS NumOfProd, AssetID FROM OrderProducts WHERE OrderID = :oid GROUP BY AssetID ORDER BY NumOfProd";
         $sql_addToStock = "UPDATE Assets SET Stock = Stock + 1 WHERE ID = :aid";
@@ -52,7 +54,7 @@
         $result2->bindValue(':id', $orderID, PDO::PARAM_STR);
         $result2->execute();
 
-        header("Location: ../index.php");
+        header("Location: currentOrders.php?succ=1");
     } else {
         header("Location: ../index.php?err=4");
     }

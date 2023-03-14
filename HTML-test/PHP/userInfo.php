@@ -20,8 +20,10 @@
 
     $data = $result->fetch(PDO::FETCH_ASSOC);
 
-    if(isset($_GET['info'])){
-        $info = $_GET['info'];
+    if($_GET['info'] == 1){
+        $notification = notification("Your password has been changed", 1);
+    } else if ($_GET['info'] == 2){
+        $notification = notification("Your personal information has been changed", 1);
     }
 ?>
 
@@ -42,11 +44,7 @@
     <body>
         <?php
             echo getHeader(5);
-            if($info == 1){
-                echo "Your password has been changed!";
-            } else if($info == 2){
-                echo "Your personal information has been changed!";
-            }
+            echo $notification
         ?>
         <div>
             <h4>Username: <?php echo $data['Username'] ?></h4>

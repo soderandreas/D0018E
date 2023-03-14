@@ -10,19 +10,15 @@
         header("Location: ../../index.php");
     }
 
-    $error = $_GET["err"];
-
-    switch ($error){
-        case 1:
-            echo "Error in the asset information. Please try again!";
-            break;
-        case 2:
-            echo "The file(s) entered where not pictures of any of the following formats: 'jpg', 'png', 'jpeg' and 'gif'.";
-            break;
-        case 3:
-            echo "Upload of files failed. Please try again!";
-            break;
-    }       
+    if($_GET['err'] == 1){
+        $notification = notification("Error in the asset information. Please try again", 3);
+    } else if ($_GET['err'] == 2) {
+        $notification = notification("The file(s) entered where not pictures of any of the following formats: 'jpg', 'png', 'jpeg' and 'gif'.", 3);
+    } else if ($_GET['err'] == 3){
+        $notification = notification("Upload of files failed. Please try again!", 3);
+    } else if ($_GET['succ'] == 1){
+        $notification = notification("Asset added!", 1);
+    }
 ?>
 
 <html>
@@ -45,10 +41,10 @@
     <body>
         <?php
             echo getHeader(2);
+            echo $notification;
         ?>
         <div>
             <form action="newAssetBack.php" method="POST" enctype="multipart/form-data">
-                <h3><a href="../../index.php">Go Back</a></h3>
                 <label for="title">Title:</label>
                 <input type="text" id="assetTitle" name="title" maxlength="60" required><br>
                 <span id="titleChars">60 characters remaining.</span><br>
@@ -56,9 +52,9 @@
                 <input type="text" id="assetDescription" name="description" maxlength="1000" required><br>
                 <span id="descriptionChars">1000 characters remaining.</span><br>
                 <label for="price">Price:</label>
-                <input type="number" id="price" name="price" required><br>
+                <input type="number" id="price" name="price" min="1" max="10000" required><br>
                 <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" required><br>
+                <input type="number" id="stock" name="stock" min="0" max="1000" required><br>
                 <label for="image">Select image:</label>
                 <input type="file" multiple="multiple" name="upload[]" id="fileToUpload" required><br>
                 <button type="submit" href="newAssetBack.php">Submit</button>

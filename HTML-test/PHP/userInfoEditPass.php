@@ -10,6 +10,14 @@
         header("Location: ../index.php?err=5");
         exit();
     }
+
+    if($_GET['err'] == 1){
+        $notification = notification("All inputs need to be set!", 3); 
+    } else if ($_GET['err'] == 2){
+        $notification = notification("Old password does is wrong", 2);
+    } else if ($_GET['err'] == 3){
+        $notification = notification("Input for new password does not match", 2);
+    }
 ?>
 
 <html>
@@ -29,6 +37,7 @@
     <body>
         <?php
             echo getHeader(5);
+            echo $notification;
         ?>
 
         <div>

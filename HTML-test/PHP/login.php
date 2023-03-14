@@ -2,7 +2,7 @@
     include "secret.php";
     include "functions.php";
 
-    if(isset($_POST['username']) && isset($_POST['password'])){
+    if($_POST['username'] != null && $_POST['password'] != null){
 
         $conn = establishConnection($host, $dbname, $user, $pass);
         
@@ -44,7 +44,9 @@
             #$_SESSION["username"] = $name;
             $_SESSION['UserID'] = $id;
             header("Location: ../index.php");
-        } else {
+        } else if ($banned == false) {
+            header("Location: ../index.php?err=3");
+        } else if ($banned == true) {
             header("Location: ../index.php?err=2");
         }
         #echo "test4";	
@@ -53,6 +55,6 @@
         exit();
 
     } else {
-        echo "Account not found";
+        header("Location: ../index.php?err=1");
     }
 ?>

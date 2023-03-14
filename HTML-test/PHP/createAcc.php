@@ -1,5 +1,10 @@
 <?php
-
+    include "functions.php";
+    if($_GET['err'] == 1){
+        $notification = notification("You must fill all the fields!", 3);
+    } else if ($_GET['err'] == 2){
+        $notification = notification("Your information (username/password/mail) is already in use", 3);
+    }
 ?>
 
 <!--<html>
@@ -69,6 +74,7 @@
 
 </head>
 <body>
+    <?php echo $notification ?>
 	<div class="loginbox">
 		<img alt="" src="../WebsitePictures/avatar.png" class="avatar">
 		<h1>Register</h1>
@@ -76,11 +82,11 @@
 			<div class="logincredentials">
 				<div class="left">
 					<p>Name</p>
-                    <input type="text" placeholder="Enter Name" name="fName" id="fName" required>
+                    <input type="text" placeholder="Enter Name" name="fName" id="fName" minlength="1" maxlength="45" required>
 					<p>Age</p>
-                    <input type="Age" id="age" name="age" placeholder="Enter Age">
+                    <input type="number" id="age" name="age" min="13" max="120" placeholder="Enter Age" required>
 					<p>Phone number</p>
-                    <input type="tel" placeholder="070xxxxxxx" name="phone" id="phone" required>
+                    <input type="tel" placeholder="070xxxxxxx" name="phone" id="phone" min="4" max="13" required>
 					<p>Username</p>
                     <input type="text" placeholder="Enter Username" name="username" id="username" required>
 				</div>

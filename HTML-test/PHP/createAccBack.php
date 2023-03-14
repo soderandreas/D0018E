@@ -4,7 +4,7 @@
 
     $conn = establishConnection($host, $dbname, $user, $pass);
 
-    if(isset($_POST['username']) && isset($_POST['password']) /*&& isset($_POST['password-repeat'])*/ && isset($_POST['email']) && isset($_POST['fName']) && isset($_POST['lName']) && isset($_POST['gender']) && isset($_POST['phone']) && isset($_POST['age'])){
+    if($_POST['username'] != null && $_POST['password'] != null /*&& isset($_POST['password-repeat'])*/ && $_POST['email'] != null && $_POST['fName'] != null && $_POST['lName'] != null && $_POST['gender'] != null && $_POST['phone'] != null && $_POST['age'] != null){
         /*if($_POST['password'] != $_POST['password-repeat']){
             header("Location: createAcc.php?err=1");
         }*/
@@ -44,7 +44,12 @@
         $result->bindValue(':p', $safePhone, PDO::PARAM_STR);
         $result->bindValue(':a', $safeAge, PDO::PARAM_STR);
 
-        $result->execute();
+        try{
+            $result->execute();
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+            //exit();
+        }
 
         $sql_get_id = "SELECT ID FROM Users WHERE Username = :name AND Password = :pass";		
         $result2 = $conn->prepare($sql_get_id);
@@ -70,6 +75,6 @@
 		header("Location: ../index.php");
 
     } else {
-        echo "ERROR";
+        header("Location: createAcc.php?err=1");
     }
 ?>

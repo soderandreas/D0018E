@@ -25,8 +25,9 @@ table, th, td {
 }
 
 .order_cancel{
-    margin-top: 24px;
+    margin-top: 21px;
     margin-right: 40px;
+    text-align: center;
 }
 
 img {

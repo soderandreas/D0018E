@@ -39,7 +39,7 @@
         }
 
     } else if ($error == 2){
-        echo "You have been banned!";
+        //echo "You have been banned!";
     }
 ?>
 
@@ -78,6 +78,7 @@
     <body onload="startValue('<?php echo $sortType ?>')">
         <?php
             if(!$loggedIn){
+                echo $notification;
                 echo $defaultHomePage;
             } else {
                 echo $loggedInHomePage;

@@ -15,7 +15,9 @@
 
     $output = "";
 
-    $sql_orders = "SELECT DISTINCT OrderID, SUM(OrderProducts.Price) AS TotalPrice FROM OrderProducts INNER JOIN Orders ON OrderProducts.OrderID = Orders.ID INNER JOIN Assets ON OrderProducts.AssetID = Assets.ID WHERE Orders.UserID = :id GROUP BY OrderID ORDER BY OrderID";
+    $sql_orders = "SELECT DISTINCT OrderID, 
+    CONVERT_TZ(OrderTime, '+00:00', CONCAT('+', CAST(DATE_FORMAT(SEC_TO_TIME(FLOOR(((SYSDATE() - UTC_TIMESTAMP())/10000)*3600)), '%H:%i') AS CHAR))) AS TimeOfOrder,
+    SUM(OrderProducts.Price) AS TotalPrice, Status FROM OrderProducts INNER JOIN Orders ON OrderProducts.OrderID = Orders.ID INNER JOIN Assets ON OrderProducts.AssetID = Assets.ID WHERE Orders.UserID = :id GROUP BY OrderID ORDER BY OrderID";
 
     $result = $conn->prepare($sql_orders);
 
@@ -23,20 +25,39 @@
 
     $result->execute();
 
+    $usertype = checkUserType($conn);
+
     while($data = $result->fetch(PDO::FETCH_ASSOC)){
+
+        if($data['Status'] != 1){
+            $cancel = "<a href=cancelOrder.php?order=".$data['OrderID']."><h3>Cancel Order</h3></a><br><br>";
+            $edit = "<a href=editOrder.php?order=".$data['OrderID']."><h3>Edit Order</h3></a><br><br>";
+            $status = "<h4 style='color: #a2a200;'> Status: In Progess</h4>";
+        } else {
+            $cancel = "";
+            $edit = "";
+            $status = "<h4 style='color: #14a200;'> Status: Sent</h4>";
+        }
+
         $output .= "<div class='order-container'>
                         <a href='order.php?oid=".$data['OrderID']."'>
                             <div class='order_info'>
                                 <h2> Order: ".$data['OrderID']." </h2>
-                                <h3> Total price: $".$data['TotalPrice']." </h3>
+                                <h3> Total price: $".$data['TotalPrice']." </h3> <br>
+                                <h3> Time: ".$data['TimeOfOrder']." </h3> <br>
+                                ".$status."
                             </div>
                         </a>
-                        <a href=cancelOrder.php?order=".$data['OrderID'].">
-                            <div class='order_cancel'>
-                                <h3>Cancel Order</h3>
-                            </div>
-                        </a>
+                        <div class='order_cancel'>
+                            ". $edit ."
+                            ". $cancel ."
+                        </div>
+                        
                     </div>";
+
+        if($_GET['succ']){
+            $notification = notification("Your order has been canceled!", 1);
+        }
     }
 
 ?>
@@ -60,15 +81,82 @@
     <body>
         <?php
             echo getHeader(3);
+            echo $notification;
         ?>
-        <h2><a href="../index.php">Go back</a></h2>
-        <h1>All current orders</h1>
+        <h1>All your orders:</h1>
         <hr>
         <?php
             if($output == ""){
                 echo "You currently have no orders";
             } else {
                 echo $output;
+            }
+        ?>
+        <hr>
+        <?php
+            if($usertype == 3){
+                $sql_otherOrders = "SELECT DISTINCT Orders.UserID, Username,
+                CONVERT_TZ(OrderTime, '+00:00', CONCAT('+', CAST(DATE_FORMAT(SEC_TO_TIME(FLOOR(((SYSDATE() - UTC_TIMESTAMP())/10000)*3600)), '%H:%i') AS CHAR))) AS TimeOfOrder,
+                OrderID, Status, SUM(OrderProducts.Price) AS TotalPrice FROM OrderProducts INNER JOIN Orders ON OrderProducts.OrderID = Orders.ID INNER JOIN Assets ON OrderProducts.AssetID = Assets.ID INNER JOIN Users ON Orders.UserID = Users.ID WHERE Orders.UserID != :id GROUP BY OrderID ORDER BY OrderID";
+
+                $result = $conn->prepare($sql_otherOrders);
+
+                $result->bindValue(':id', $id, PDO::PARAM_STR);
+
+                $result->execute();
+                
+                echo "<h1>Other users orders</h1>";
+
+                while($data = $result->fetch(PDO::FETCH_ASSOC)){
+                    if($data['Status'] != 1){
+                        $cancel = "<a href=cancelOrder.php?order=".$data['OrderID']."><h3>Cancel Order</h3></a><br><br>";
+                        $edit = "<a href=editOrder.php?order=".$data['OrderID']."><h3>Edit Order</h3></a><br><br>";
+                        $status = "<h4 style='color: #a2a200;'> Status: In Progess</h4>";
+                    } else {
+                        $cancel = "";
+                        $edit = "";
+                        $status = "<h4 style='color: #14a200;'> Status: Sent</h4>";
+                    }
+
+                    echo "
+                    <div class='order-container'>
+                        <a href='order.php?oid=".$data['OrderID']."'>
+                            <div class='order_info'>
+                                <h2> Order: ".$data['OrderID']." </h2>
+                                <h3> Total price: $".$data['TotalPrice']." </h3> <br>
+                                <h3> Time: ".$data['TimeOfOrder']." </h3> <br>
+                                <h4> User: ".$data['Username']."</h4>
+                                ".$status."
+                            </div>
+                        </a>
+                        <div class='order_cancel'>
+                            ".$edit."
+                            ".$cancel."
+                        </div>
+                    </div>";
+                }
+
+                echo "<h1>Other users shopping basket</h1>";
+
+                $sql_otherBasket = "SELECT DISTINCT SUM(Price) AS PriceTotal, Username, Users.ID FROM ShoppingBasket INNER JOIN Users ON Users.ID = UserID INNER JOIN Assets ON Assets.ID = AssetID WHERE UserID != :uid GROUP BY Users.ID";
+
+                $result = $conn->prepare($sql_otherBasket);
+
+                $result->bindValue(':uid', $id, PDO::PARAM_STR);
+
+                $result->execute();
+
+                while($data = $result->fetch(PDO::FETCH_ASSOC)){
+                    echo "
+                    <div class='order-container'>
+                        <a href='Admin/otherBasket.php?user=".$data['ID']."'>
+                            <div class='order_info'>
+                                <h2> User: ".$data['Username']." </h2>
+                                <h3> Total price: $".$data['PriceTotal']." </h3> <br>
+                            </div>
+                        </a>
+                    </div>";
+                }
             }
         ?>
     </body>

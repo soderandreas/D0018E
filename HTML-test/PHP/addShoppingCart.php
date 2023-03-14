@@ -23,24 +23,27 @@
 
     $data = $result->fetch(PDO::FETCH_ASSOC);
 
-    if($num != null){
-        $currNum = $data['NumOfProd'] + $num;
+    if(($num > 0 && $num < 11) || $num == null){
+        if($num == null){
+            $num = 1;
+        }
+        if(($num+$data['NumOfProd']) > 10){
+            $num = 10 - $data['NumOfProd'];
+        }
     } else {
-        $currNum = $data['NumOfProd'];
-        $num = 1;
+        echo "error";
+        exit();
     }
 
-    if($currNum < 10){
-        $sql_cart = "INSERT INTO ShoppingBasket(UserID, AssetID) VALUES (:uid, :aid)";
+    $sql_cart = "INSERT INTO ShoppingBasket(UserID, AssetID) VALUES (:uid, :aid)";
 
-        $result = $conn->prepare($sql_cart);
+    $result = $conn->prepare($sql_cart);
 
-        $result->bindValue(':uid', $userID, PDO::PARAM_STR);
-        $result->bindValue(':aid', $assetID, PDO::PARAM_STR);
+    $result->bindValue(':uid', $userID, PDO::PARAM_STR);
+    $result->bindValue(':aid', $assetID, PDO::PARAM_STR);
 
-        for($i = 0; $i < $num; $i++){
-            $result->execute();
-        }
+    for($i = 0; $i < $num; $i++){
+        $result->execute();
     }
 
     echo "done";

@@ -6,7 +6,7 @@
 	    session_destroy();
         header("Location:../index.php");
     } else {
-        echo "Not logged in!";
+        header("Location:../index.php");
     }
 
 ?>

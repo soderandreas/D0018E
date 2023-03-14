@@ -85,3 +85,42 @@ h1{
 {
     color: #ffc107;
 }
+
+.notification{
+    text-align: center;
+    font-size: 22px;
+    padding: 0px 10px 10px 10px;
+    border-radius: 0 0 20px 20px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.notification > p {
+    margin: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.notification.color1 > p {
+    background-color: #14a20087;
+}
+
+.notification.color2 > p {
+    background-color: #e3e30087;
+}
+
+.notification.color3 > p {
+    background-color: #a2000070;
+    color: white;
+}
+
+.notification.color1{
+    background-color: #14a20099;
+}
+
+.notification.color2{
+    background-color: #a2a20099;
+}
+
+.notification.color3{
+    background-color: #a2000099;
+}

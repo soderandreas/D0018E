@@ -11,7 +11,7 @@
         exit();
     }
 
-    if(isset($_POST['username']) && isset($_POST['fName']) && isset($_POST['lName']) && isset($_POST['age']) && isset($_POST['phone']) && isset($_POST['gender']) && isset($_POST['email'])){
+    if($_POST['username'] != null && $_POST['fName'] != null && $_POST['lName'] != null && $_POST['age'] != null && $_POST['phone'] != null && $_POST['gender'] != null && $_POST['email'] != null){
         $unsafeUsername = $_POST['username'];
         $unsafeFName = $_POST['fName'];
         $unsafeLName = $_POST['lName'];
@@ -27,6 +27,11 @@
         $safePhone = filter_var($unsafePhone, FILTER_SANITIZE_STRING);
         $safeGender = filter_var($unsafeGender, FILTER_SANITIZE_STRING);
         $safeEmail = filter_var($unsafeEmail, FILTER_SANITIZE_STRING);
+
+        if($safeAge < 13 || $safeAge > 120){
+            header("Location: userInfoEdit.php?err=2");
+            exit();
+        }
 
         $sql_edit = "UPDATE Users SET Username = :u, FName = :fn, LName = :ln, Mail = :m, Gender = :g, PhoneNum = :pn, Age = :a WHERE ID = :id";
 

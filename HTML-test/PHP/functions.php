@@ -1,4 +1,6 @@
 <?php
+    include "secret.php";
+
     function establishConnection($host, $dbname, $user, $pass){
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
@@ -43,11 +45,24 @@
     function deskHeader($title, $url, $page){
         $output = "";
 
+        $conn = establishConnection($GLOBALS['host'], $GLOBALS['dbname'], $GLOBALS['user'], $GLOBALS['pass']);
+
+        $usertype = checkUserType($conn);
+
         for($i = 0; $i < count($title[$page]); $i++){
-            $output .= "
-            <li>
-                <a href='".$url[$page][$i]."' class='menu-item'>".$title[$page][$i]."</a>
-            </li>";
+            if($title[$page][$i] == "Handle Users" || $title[$page][$i] == "Add New Asset"){
+                if($usertype == 2 || $usertype == 3){
+                    $output .= "
+                    <li>
+                        <a href='".$url[$page][$i]."' class='menu-item'>".$title[$page][$i]."</a>
+                    </li>";
+                }
+            } else {
+                $output .= "
+                <li>
+                    <a href='".$url[$page][$i]."' class='menu-item'>".$title[$page][$i]."</a>
+                </li>";
+            }
         }
 
         $output .= "
@@ -79,6 +94,7 @@
 
     // Handles the header for different pages
     function getHeader($page){
+
         // 0 = homepage, 1 = Handle Users, 2 = Add New Asset, 3 = Current Orders, 4 = About Us, 5 = Order, Product or Shopping Cart, 6 = Edit asset
         $whatPage = [["Handle Users","Add New Asset","Current Orders", "About Us"],
                      ["Products","Add New Asset","Current Orders","About Us"], 
@@ -207,9 +223,23 @@
                 <li><a href='".$urlPage[$page][4]."'>Log Out</a></li>
                 <li><div class='split9'></div></li>
             </ul>
-        </div>";
+        </div>
+        <script>
+            document.getElementById('lalala').addEventListener('change', (e)=> {
+                let tValue = e.target.value.replace(/<[^>]+>/gim, '');
+                e.target.value = tValue;
+            });    
+        </script>";
     
     return $output;
     }
 
+/*notification functions*/    
+function notification($text, $color){ //$text = output that will be shown to the user, $color = 1 = green, $color = 2 = yellow, $color = 3 = red
+    $output = "
+        <div class='notification color".$color."'>
+            <p>".$text."</p>
+        </div>";
+    return $output;
+}
 ?>

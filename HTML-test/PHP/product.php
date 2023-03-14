@@ -45,7 +45,7 @@
         for($i = 0; $i < count($firstComment); $i++){
             $output .= "
             <div class='comment'>
-                <h5> <b>".$firstComment[$i][1]."</b>: ".$firstComment[$i][2]."". showRating($firstComment[$i][4]) ." </h5><i>from ".$firstComment[$i][5]."</i><br><i>posted ".postTime($conn, $firstComment[$i][0])."</i><br>
+                <h5> <b>".$firstComment[$i][1]."</b>: <p class='commentText'> ".$firstComment[$i][2]."</p>". showRating($firstComment[$i][4]) ." </h5><i>from ".$firstComment[$i][5]."</i><br><i>posted ".postTime($conn, $firstComment[$i][0])."</i><br>
                 <a href='javascript:;'  onclick='replyComment(".$firstComment[$i][0].")'>reply</a>
                 <div class='postComment' style='display: none;' id='".$firstComment[$i][0]."'>
                     <form action='comment.php?asset=".$assetID."&comm=".$firstComment[$i][0]."' method='POST'>
@@ -86,7 +86,7 @@
             if($replies[$i][3] == $firstComment[0]){
                 $output .= "
                 <div class='comment'>
-                    <h5> <b>".$replies[$i][1]."</b>: ".$replies[$i][2]." </h5><i>from ".$replies[$i][5]."</i><br><i>posted ".postTime($conn, $replies[$i][0])."</i><br>
+                    <h5> <b>".$replies[$i][1]."</b>: <p class='commentText'>".$replies[$i][2]."</p> </h5><i>from ".$replies[$i][5]."</i><br><i>posted ".postTime($conn, $replies[$i][0])."</i><br>
                     <a href='javascript:;'  onclick='replyComment(".$replies[$i][0].")'>reply</a>
                     <div class='postComment' style='display: none;' id='".$replies[$i][0]."'>
                         <form action='comment.php?asset=".$assetID."&comm=".$replies[$i][0]."' method='POST'>
@@ -100,6 +100,25 @@
             }
         }
         return $output;
+    }
+
+    function purchased($conn){
+        session_start();
+
+        $assetID = $_GET["asset"];
+
+        $sql_purchased = "SELECT CASE WHEN COUNT(AssetID) > 0 THEN 1 WHEN COUNT(AssetID) < 1 THEN 0 END AS Result FROM OrderProducts INNER JOIN Orders ON Orders.ID = OrderID WHERE AssetID = :aid AND Orders.UserID = :uid";
+
+        $result = $conn->prepare($sql_purchased);
+
+        $result->bindValue(':aid', $assetID, PDO::PARAM_STR);
+        $result->bindValue(':uid', $_SESSION['UserID'], PDO::PARAM_STR);
+
+        $result->execute();
+
+        $data = $result->fetch(PDO::FETCH_ASSOC);
+
+        return $data['Result'];
     }
 
     include "secret.php";
@@ -140,7 +159,6 @@
 
     $assetHTML = "
             Description: ".$description."<br>
-            Current Stock: ".$stock."
         ";
 
 
@@ -215,6 +233,12 @@
 
         $count++;
     }
+
+    if($_GET['err'] == 1){
+        $notification = notification("Your comment/review can not be longer than 200 characters!", 3);
+    } else if ($_GET['err'] == 2){
+        $notification = notification("Your comment/review must be longer than 0 characters!", 3);
+    }
 ?>
 
 <html>
@@ -282,7 +306,9 @@
         <link href='https://raw.githubusercontent.com/daneden/animate.css/master/animate.css' rel='stylesheet'>
     </head>
     <body onload="showSlides(1);">
-        <?php echo getHeader(5); ?>
+        <?php echo getHeader(5);
+              echo $notification;
+        ?>
         <div class="container">
             <div class="row">
                 <div class="slideshow-container">
@@ -301,34 +327,24 @@
 
                     <h6 class="title-price"><small>Price</small></h6>
                     <h3 style="margin-top:0px;">$<?php echo $price ?></h3>
-        
 
-                    <!---<div class="section">
-                        <h6 class="title-attr" style="margin-top:15px;" ><small>Color</small></h6>                    
-                        <div>
-                            <div class="attr" style="width:25px;background:#5a5a5a;"></div>
-                            <div class="attr" style="width:25px;background:white;"></div>
+                    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+
+                    <form id="form1" target="dummyframe">
+                        <div class="section" style="padding-bottom:20px;">
+                            <h6 class="title-attr" style="margin-top:15px;" ><small>Amount</small></h6>                    
+                            <div>
+                                <div class="btn-minus"><span class="glyphicon glyphicon-minus"></span></div>
+                                    <input type="number" id="amountProd" value="1" min="1" max="10" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"/>
+                                <div class="btn-plus"><span class="glyphicon glyphicon-plus"></span></div>
+                            </div>
+                            <h6 class="title-attr" style="margin-top:15px;" ><small>Stock: <?php echo $stock ?></small></h6>
                         </div>
-                    </div>
-                    <div class="section" style="padding-bottom:5px;">
-                        <h6 class="title-attr"><small>Memory</small></h6>                    
-                        <div>
-                            <div class="attr2">69 GB</div>
-                            <div class="attr2">420 GB</div>
-                        </div>
-                    </div>--->   
-                    <div class="section" style="padding-bottom:20px;">
-                        <h6 class="title-attr" style="margin-top:15px;" ><small>Antal</small></h6>                    
-                        <div>
-                            <div class="btn-minus"><span class="glyphicon glyphicon-minus"></span></div>
-                            <input id="amountProd" value="1" />
-                            <div class="btn-plus"><span class="glyphicon glyphicon-plus"></span></div>
-                        </div>
-                    </div>                
+                    </form>                
         
 
                     <div class="section" style="padding-bottom:20px;">
-                        <button class="btn btn-success" onclick="addToCartProduct(<?php echo $assetID ?>)"><span style="margin-right:0px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Add to cart</button>
+                        <button form="form1" class="btn btn-success" onclick="addToCartProduct(<?php echo $assetID ?>)"><span style="margin-right:0px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Add to cart</button>
                     </div>                                        
                 </div>                              
         
@@ -338,32 +354,6 @@
                         <li id ="Recentioner">Discussion</li>
                     </ul>
                     <div class= "specifikationerd" style="width:100%;border-top:1px solid silver">
-                        <!---<p style="padding:15px;">
-                            <small>
-                            Stay connected either on the phone or the Web with the Galaxy S4 I337 from Samsung. With 16 GB of memory and a 4G connection, this phone stores precious photos and video and lets you upload them to a cloud or social network at blinding-fast speed. With a 17-hour operating life from one charge, this phone allows you keep in touch even on the go. 
-        
-                            With its built-in photo editor, the Galaxy S4 allows you to edit photos with the touch of a finger, eliminating extraneous background items. Usable with most carriers, this smartphone is the perfect companion for work or entertainment.
-                            </small>
-                        </p>
-                        <small>
-                            <ul>
-                                <li>Super AMOLED capacitive touchscreen display with 16M colors</li>
-                                <li>Available on GSM, AT T, T-Mobile and other carriers</li>
-                                <li>Compatible with GSM 850 / 900 / 1800; HSDPA 850 / 1900 / 2100 LTE; 700 MHz Class 17 / 1700 / 2100 networks</li>
-                                <li>MicroUSB and USB connectivity</li>
-                                <li>Interfaces with Wi-Fi 802.11 a/b/g/n/ac, dual band and Bluetooth</li>
-                                <li>Wi-Fi hotspot to keep other devices online when a connection is not available</li>
-                                <li>SMS, MMS, email, Push Mail, IM and RSS messaging</li>
-                                <li>Front-facing camera features autofocus, an LED flash, dual video call capability and a sharp 4128 x 3096 pixel picture</li>
-                                <li>Features 16 GB memory and 2 GB RAM</li>
-                                <li>Upgradeable Jelly Bean v4.2.2 to Jelly Bean v4.3 Android OS</li>
-                                <li>17 hours of talk time, 350 hours standby time on one charge</li>
-                                <li>Available in white or black</li>
-                                <li>Model I337</li>
-                                <li>Package includes phone, charger, battery and user manual</li>
-                                <li>Phone is 5.38 inches high x 2.75 inches wide x 0.13 inches deep and weighs a mere 4.59 oz </li>
-                            </ul>  
-                        </small>--->
                         <p style="padding:15px;">
                             <?php if($userTypeNum != 1){
                                 echo "<a href='Admin/editAsset.php?asset=".$assetID."'>Edit asset info</a><br>";
@@ -378,16 +368,22 @@
                     <div class= "Recentionerd" style="width:100%;border-top:1px solid silver">
                         <div class="postComment">
                             <form action="comment.php?asset=<?php echo $assetID?>" method="POST">
-                                <div class="stars">
-                                    <input type="number" name="rating" hidden>
-                                    <ul class='rating'>
-                                        <li class='fa fa-star star disable'></li>
-                                        <li class='fa fa-star star disable'></li>
-                                        <li class='fa fa-star star disable'></li>
-                                        <li class='fa fa-star star disable'></li>
-                                        <li class='fa fa-star star disable'></li>
-                                    </ul>
-                                </div>
+
+                                <?php
+                                    if(purchased($conn)){
+                                        echo "
+                                        <div class='stars'>
+                                            <input type='number' name='rating' hidden>
+                                            <ul class='rating'>
+                                                <li class='fa fa-star star disable'></li>
+                                                <li class='fa fa-star star disable'></li>
+                                                <li class='fa fa-star star disable'></li>
+                                                <li class='fa fa-star star disable'></li>
+                                                <li class='fa fa-star star disable'></li>
+                                            </ul>
+                                        </div>";
+                                    }
+                                ?>
                                 <label for="freeform">Comment on <?php echo $name ?>:</label><br>
                                 <textarea id="freeform" name="freeform" rows="4" cols="50" maxlength="200"></textarea><br>
                                 <input type="submit" value="Post Comment">
@@ -395,31 +391,6 @@
                         </div>
                         <script type='text/javascript' src='../javaScript.js'></script>
                         <?php echo printComments($conn, $firstComment, $responses, $assetID); ?>
-                        <!---<p style="padding:15px;">
-                            <small>
-        
-                            BOIIIIIIIII to edit photos with the touch of a finger, eliminating extraneous background items. Usable with most carriers, this smartphone is the perfect companion for work or entertainment.
-                            </small>
-                        </p>
-                        <small>
-                            <ul>
-                                <li>Super AMOLED capacitive touchscreen display with 16M colors</li>
-                                <li>Available on GSM, AT T, T-Mobile and other carriers</li>
-                                <li>Compatible with GSM 850 / 900 / 1800; HSDPA 850 / 1900 / 2100 LTE; 700 MHz Class 17 / 1700 / 2100 networks</li>
-                                <li>MicroUSB and USB connectivity</li>
-                                <li>Interfaces with Wi-Fi 802.11 a/b/g/n/ac, dual band and Bluetooth</li>
-                                <li>Wi-Fi hotspot to keep other devices online when a connection is not available</li>
-                                <li>SMS, MMS, email, Push Mail, IM and RSS messaging</li>
-                                <li>Front-facing camera features autofocus, an LED flash, dual video call capability and a sharp 4128 x 3096 pixel picture</li>
-                                <li>Features 16 GB memory and 2 GB RAM</li>
-                                <li>Upgradeable Jelly Bean v4.2.2 to Jelly Bean v4.3 Android OS</li>
-                                <li>17 hours of talk time, 350 hours standby time on one charge</li>
-                                <li>Available in white or black</li>
-                                <li>Model I337</li>
-                                <li>Package includes phone, charger, battery and user manual</li>
-                                <li>Phone is 5.38 inches high x 2.75 inches wide x 0.13 inches deep and weighs a mere 4.59 oz </li>
-                            </ul>  
-                        </small>--->
                     </div>
                 </div>
                 </div>     

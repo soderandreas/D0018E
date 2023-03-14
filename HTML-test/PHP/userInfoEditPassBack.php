@@ -11,7 +11,7 @@
         exit();
     }
 
-    if(isset($_POST['oldPassword']) && isset($_POST['newPassword']) && isset($_POST['newPasswordAgain'])) {
+    if($_POST['oldPassword'] != null && $_POST['newPassword'] != null && $_POST['newPasswordAgain'] != null) {
         echo $_POST['oldPassword'], $_POST['newPassword'], $_POST['newPasswordAgain'], "\n";
         echo "works";
 
@@ -44,6 +44,8 @@
             $result->execute();
 
             header("Location: userInfo.php?info=1");
+        } else {
+            header("Location: userInfoEditPass.php?err=3");
         }
     } else {
         header("Location: userInfoEditPass.php?err=1");

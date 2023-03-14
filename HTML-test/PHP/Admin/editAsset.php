@@ -29,6 +29,14 @@
         header("Location: ../../index.php");
         exit();
     }
+
+    if($_GET['err'] == 1){
+        $notification = notification("Input can not be negative!", 3);
+    } else if ($_GET['err'] == 2){
+        $notification = notification("All fields must be filled!", 3);
+    } else if ($_GET['err'] == 3){
+        $notification = notification("Title or Description are too long!", 3);
+    }
 ?>
 <html>
     <head>
@@ -48,6 +56,7 @@
     <body>
         <?php
             echo getHeader(6);
+            echo $notification;
         ?>
         <form action="editAssetBack.php?asset=<?php echo $assetID?>" method="POST">
             <label for="title">Title:</label>
@@ -57,9 +66,9 @@
             <input type="text" id="assetDescription" name="description" maxlength="1000" value="<?php echo $description ?>" required><br>
             <span id="descriptionChars">1000 characters remaining.</span><br>
             <label for="price">Price:</label>
-            <input type="number" id="price" name="price" value="<?php echo $price ?>" required><br>
+            <input type="number" id="price" name="price" value="<?php echo $price ?>" min="1" max="10000" required><br>
             <label for="stock">Stock:</label>
-            <input type="number" id="stock" name="stock" value="<?php echo $stock ?>" required><br>
+            <input type="number" id="stock" name="stock" value="<?php echo $stock ?>" min="0" max="1000" required><br>
             <!---<label for="image">Upload new images:</label>
             <input type="file" multiple="multiple" name="upload[]" id="fileToUpload" required><br>---->
             <button type="submit" href="newAssetBack.php">Submit</button>

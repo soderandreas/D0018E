@@ -33,13 +33,13 @@
         $assets = "";
 
         if($sortType == "old") {
-            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%' ORDER BY Assets.ID DESC";
+            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%' ORDER BY Assets.ID ASC";
         } else if($sortType == "rating") {
             $sql_assets = "SELECT DISTINCT AVG(Stars) AS RatingAvg, Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID INNER JOIN Comment ON Comment.AssetID = Assets.ID INNER JOIN Rating ON Rating.CommentID = Comment.ID WHERE Assets.Name LIKE '%".$search."%' GROUP BY Assets.ID, PictureName ORDER BY RatingAvg DESC";
         } else if($sortType == "comment"){
             $sql_assets = "SELECT DISTINCT COUNT(Comment.ID) AS NumOfComments, Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID INNER JOIN Comment ON Comment.AssetID = Assets.ID WHERE Assets.Name LIKE '%".$search."%' GROUP BY Assets.ID, PictureName ORDER BY NumOfComments DESC";
         } else {
-            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%'";
+            $sql_assets = "SELECT Assets.ID, Name, Price, Stock, PictureName FROM Assets INNER JOIN AssetPictures ON Assets.ID = AssetPictures.AssetID WHERE Assets.Name LIKE '%".$search."%' ORDER BY Assets.ID DESC";
         }
 
         $result = $conn->prepare($sql_assets);
@@ -121,6 +121,14 @@
 
     if($_GET['search'] != null){
         $searchValue = "<p>You searched for: ".$_GET['search']."</p>";
+    }
+
+    if($_GET["err"] == 1){
+        $notification = notification("Input error", 3);
+    } else if ($_GET["err"] == 2){
+        $notification = notification("You have been banned!", 3);
+    } else if ($_GET["err"] == 3){
+        $notification = notification("Your username and password do not match", 3);
     }
 
     $defaultHomePage = '
